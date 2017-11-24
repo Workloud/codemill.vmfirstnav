@@ -84,7 +84,8 @@ namespace CodeMill.VMFirstNav
 			T viewModel;
 
 			// First instantiate the view model
-			viewModel = Activator.CreateInstance<T>();
+			//viewModel = Activator.CreateInstance<T>(); //Workloud
+			viewModel = CreateInstance<T>();
 			initialize?.Invoke(viewModel);
 
 			// Actually switch the page
@@ -206,7 +207,8 @@ namespace CodeMill.VMFirstNav
 			T viewModel;
 
 			// Instantiate the view model & invoke the initialize method, if any
-			viewModel = Activator.CreateInstance<T>();
+			//viewModel = Activator.CreateInstance<T>(); //Workloud
+			viewModel = CreateInstance<T>();
 			initialize?.Invoke(viewModel);
 
 			await PushAsync(viewModel);
@@ -217,7 +219,8 @@ namespace CodeMill.VMFirstNav
 			T viewModel;
 
 			// Instantiate the view model & invoke the initialize method, if any
-			viewModel = Activator.CreateInstance<T>();
+			//viewModel = Activator.CreateInstance<T>(); //Workloud
+			viewModel = CreateInstance<T>();
 			initialize?.Invoke(viewModel);
 
 			await PushModalAsync(viewModel);
@@ -234,7 +237,8 @@ namespace CodeMill.VMFirstNav
 			var viewType = _viewModelViewDictionary[viewModelType];
 
 			// instantiate it
-			var view = (IViewFor<T>)Activator.CreateInstance(viewType);
+			//var view = (IViewFor<T>)Activator.CreateInstance(viewType); //Workloud
+			var view = (IViewFor<T>)CreateInstance(viewType);
 
 			view.ViewModel = viewModel;
 
@@ -247,7 +251,8 @@ namespace CodeMill.VMFirstNav
 
 			var viewType = _viewModelViewDictionary[viewModelType];
 
-			var view = (IViewFor)Activator.CreateInstance(viewType);
+			//var view = (IViewFor)Activator.CreateInstance(viewType); //Workloud
+			var view = (IViewFor)CreateInstance(viewType);
 
 			var viewModelProperty = view.GetType().GetRuntimeProperty(nameof(IViewFor<T>.ViewModel));
 
@@ -255,5 +260,28 @@ namespace CodeMill.VMFirstNav
 
 			return view;
 		}
+
+		#region Workloud
+		private static Func<Type, object> createInstanceFunc = null;
+
+		private static object CreateInstance(Type type)
+		{
+			if (createInstanceFunc != null)
+				return createInstanceFunc.Invoke(type);
+			return Activator.CreateInstance(type);
+		}
+
+		private static T CreateInstance<T>()
+		{
+			if (createInstanceFunc != null)
+				return (T)createInstanceFunc.Invoke(typeof(T));
+			return (T)(Activator.CreateInstance(typeof(T)));
+		}
+
+		public static void RegisterFactory(Func<Type, object> createInstanceCallback)
+		{
+			createInstanceFunc = createInstanceCallback;
+		}
+		#endregion
 	}
 }
