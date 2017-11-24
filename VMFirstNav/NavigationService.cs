@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xamarin.Forms;
-using System.Reflection;
 
 namespace CodeMill.VMFirstNav
 {
@@ -12,12 +12,12 @@ namespace CodeMill.VMFirstNav
 		static INavigationService instance;
 		public static INavigationService Instance => instance ?? (instance = new NavigationService());
 
-        private NavigationService()
-        {
+		private NavigationService()
+		{
 
-        }
+		}
 
-        INavigation FormsNavigation
+		INavigation FormsNavigation
 		{
 			get
 			{
@@ -65,7 +65,7 @@ namespace CodeMill.VMFirstNav
 
 		public void SwitchDetailPage<T>(T viewModel) where T : class, IViewModel
 		{
-            
+
 			var view = InstantiateViewForSwitchDetailPage(viewModel);
 
 			Page newDetailPage;
@@ -114,9 +114,9 @@ namespace CodeMill.VMFirstNav
 
 		public void Register(Type viewModelType, Type viewType)
 		{
-            // ensure Register can be called again without register the same viewmodel again.
-		    if (_viewModelViewDictionary.ContainsKey(viewModelType))
-		        return;
+			// ensure Register can be called again without register the same viewmodel again.
+			if (_viewModelViewDictionary.ContainsKey(viewModelType))
+				return;
 
 			_viewModelViewDictionary.Add(viewModelType, viewType);
 		}
@@ -164,7 +164,7 @@ namespace CodeMill.VMFirstNav
 				if (currentPage == null)
 					return;
 
-                var strongTypedPaged = currentPage as IViewFor<T>;
+				var strongTypedPaged = currentPage as IViewFor<T>;
 
 				// If we hit the view model type, break out
 				if (strongTypedPaged != null)
@@ -174,17 +174,17 @@ namespace CodeMill.VMFirstNav
 				pagesToRemove.Add(currentPage as Page);
 			}
 
-            foreach (var item in pagesToRemove)
-            {
-                FormsNavigation.RemovePage(item);
-            }
-        }
+			foreach (var item in pagesToRemove)
+			{
+				FormsNavigation.RemovePage(item);
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Push
+		#region Push
 
-        public async Task PushAsync<T>(T viewModel) where T : class, IViewModel
+		public async Task PushAsync<T>(T viewModel) where T : class, IViewModel
 		{
 			var view = InstantiateView(viewModel);
 
@@ -241,19 +241,19 @@ namespace CodeMill.VMFirstNav
 			return view;
 		}
 
-        IViewFor InstantiateViewForSwitchDetailPage<T>(T viewModel) where T : class, IViewModel
-        {
-            var viewModelType = viewModel.GetType();
+		IViewFor InstantiateViewForSwitchDetailPage<T>(T viewModel) where T : class, IViewModel
+		{
+			var viewModelType = viewModel.GetType();
 
-            var viewType = _viewModelViewDictionary[viewModelType];
+			var viewType = _viewModelViewDictionary[viewModelType];
 
-            var view = (IViewFor)Activator.CreateInstance(viewType);
+			var view = (IViewFor)Activator.CreateInstance(viewType);
 
-            var viewModelProperty = view.GetType().GetRuntimeProperty(nameof(IViewFor<T>.ViewModel));
+			var viewModelProperty = view.GetType().GetRuntimeProperty(nameof(IViewFor<T>.ViewModel));
 
-            viewModelProperty?.SetValue(view, viewModel);
+			viewModelProperty?.SetValue(view, viewModel);
 
-            return view;
-        }
-    }
+			return view;
+		}
+	}
 }
