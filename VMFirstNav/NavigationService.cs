@@ -242,6 +242,10 @@ namespace CodeMill.VMFirstNav
 
 			view.ViewModel = viewModel;
 
+			view.Appearing += async (s, e) => { await viewModel.OnAppearing(); }; //Workloud
+			view.Disappearing += async (s, e) => { await viewModel.OnDisappearing(); }; //Workloud
+			view.OnBackButtonPressed = () => { return viewModel.OnBackButtonPressed(); }; //Workloud
+
 			return view;
 		}
 
@@ -257,6 +261,10 @@ namespace CodeMill.VMFirstNav
 			var viewModelProperty = view.GetType().GetRuntimeProperty(nameof(IViewFor<T>.ViewModel));
 
 			viewModelProperty?.SetValue(view, viewModel);
+
+			view.Appearing += (s, e) => { viewModel.OnAppearing(); }; //Workloud
+			view.Disappearing += (s, e) => { viewModel.OnDisappearing(); }; //Workloud
+			view.OnBackButtonPressed = () => { return viewModel.OnBackButtonPressed(); }; //Workloud
 
 			return view;
 		}
